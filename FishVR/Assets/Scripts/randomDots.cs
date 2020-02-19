@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class randomDots : MonoBehaviour
     public float coherent_velocity;
     [Range(-180f,180f)]
     public float coherent_direction;
-    public int density;
+    public int density = 10000;
     [Range(0f,1f)]
     public float coherence;
     public GameObject noisyDots;
@@ -19,8 +20,6 @@ public class randomDots : MonoBehaviour
     {
         ParticleSystem ns;
         ParticleSystem cs;
-        noisyDots = GameObject.Find("Background/Noise");
-        coherentDots = GameObject.Find("Background/Coherent");
         ns = noisyDots.GetComponent<ParticleSystem>();
         cs = coherentDots.GetComponent<ParticleSystem>();
         var nsMain = ns.main;
@@ -29,7 +28,7 @@ public class randomDots : MonoBehaviour
         var csMain = cs.main;
         var nsS = ns.shape;
         var csS = cs.shape;
-        
+        density = 10000;
         
         nsMain.maxParticles = 2 * density;
         csMain.maxParticles = 2 * density;
@@ -42,27 +41,55 @@ public class randomDots : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void UpdateCoherentVelocity(string newVelocity )
     {
-        ParticleSystem ns;
         ParticleSystem cs;
-        noisyDots = GameObject.Find("Background/Noise");
-        coherentDots = GameObject.Find("Background/Coherent");
-        ns = noisyDots.GetComponent<ParticleSystem>();
+        float.TryParse(newVelocity, out coherent_velocity);
+        
         cs = coherentDots.GetComponent<ParticleSystem>();
-        var nsMain = ns.main;
-        var nsE = ns.emission;
-        var csE = cs.emission;
+        
+        
         var csMain = cs.main;
-        var nsS = ns.shape;
-        var csS = cs.shape;
-        nsMain.maxParticles = 2 * density;
-        csMain.maxParticles = 2 * density;
-        nsMain.startSpeed = 0f;
+        
+        
         csMain.startSpeed = coherent_velocity;
 
+    }
+
+    public void UpdateCoherentDirection(string newDirection)
+    {
+        ParticleSystem cs;
+        float.TryParse(newDirection, out coherent_direction);
+
+        cs = coherentDots.GetComponent<ParticleSystem>();
+
+
+        var csS = cs.shape;
+
+
+        csS.rotation = new Vector3(0, -1 * coherent_direction, 0);
+
+    }
+
+    public void UpdateCoherence(string newCoherence)
+    {
+        float.TryParse(newCoherence, out coherence);
+        if (coherence > 1f)
+        {
+            coherence = 1f;
+        }
+        if(coherence < 0f)
+        {
+            coherence = 0f;
+        }
+        ParticleSystem ns;
+        ParticleSystem cs;
+        ns = noisyDots.GetComponent<ParticleSystem>();
+        cs = coherentDots.GetComponent<ParticleSystem>();
+        var nsE = ns.emission;
+        var csE = cs.emission;
         nsE.rateOverTime = (int)(density * (1 - coherence));
         csE.rateOverTime = (int)(coherence * density);
-        csS.rotation = new Vector3(0, -1*coherent_direction, 0); // -90 degrees should be right, 90 degrees should be left
+
     }
 }

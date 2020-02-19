@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Random Dots.unity
+- path: Assets/Scenes/Stimulus.unity
   isLoaded: 1
   isActive: 1
